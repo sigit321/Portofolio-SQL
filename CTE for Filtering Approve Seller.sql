@@ -22,6 +22,7 @@ with coba as
       seller_segment)
       where row_num = 1
 ),
+--delimeter label name
 ttd as (select ds, 
                seller_id, 
                concat(label_new,",",",",",") as label 
@@ -36,6 +37,7 @@ ttd as (select ds,
                     where label_new is not null
                     order by ds
 ),
+--split label name to 4 column
 spliter as (select seller_id,
                    ds,
                    label, 
@@ -51,6 +53,7 @@ spliter as (select seller_id,
                               right join coba cb
                               on ttd.seller_id = cb.seller_id)
 ),
+
 unique_value as (select ds,seller_id,label,
                  case 
                   when label1 like "Men%" then 1
@@ -74,6 +77,7 @@ unique_value as (select ds,seller_id,label,
                   end as label4                 
                     from spliter
 ),
+--tag uniq number for filtering label name 
 jumlah as  (select * 
             from
               (select ds, seller_id,
@@ -91,7 +95,7 @@ jumlah as  (select *
                                     label,
                                     (label1+label2+label3+label4) as label_uniq
                                         from unique_value)))where r_n = 1 ),
-
+--joining date as sting
 tanggal as ( select * from
                 (select cast(bd.date as string) as date1, 
                         cast(ll.ds as string) as 
@@ -102,7 +106,7 @@ tanggal as ( select * from
                           inner join belajar.lazlook ll
                           on bd.date=ll.ds
                           group by date1,date2,week))
---select sum(ipv) from (
+--select all metrics perf
 select * from 
        (select cast(ll.ds as string) as ds,t.week as 
         week,
